@@ -19,7 +19,7 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = ['Order', 'Control'];
+const navItems = ['Client', 'Order', 'Product'];
 
 const Navbar = (props: Props) => {
   const { window } = props;
@@ -52,7 +52,7 @@ const Navbar = (props: Props) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar component="nav">
+      <AppBar component="nav" sx={{background: "#FFF", color: "#000", boxShadow: '0'}}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -72,7 +72,7 @@ const Navbar = (props: Props) => {
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }}>
+              <Button key={item} sx={{ color: '#000' }}>
                 {item}
               </Button>
             ))}
