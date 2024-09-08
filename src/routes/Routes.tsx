@@ -4,6 +4,7 @@ import Landing from "../pages/Landing";
 import { ROUTES } from "./schema";
 import RegisterClientForm from "../component/RegisterClientForm";
 import Layout from "../component/Layout";
+import Client from "../pages/Client";
 
 export const router = createBrowserRouter([
   {
@@ -11,7 +12,7 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: ROUTES.INDEX, element: <Landing /> },
-      { path: ROUTES.CLIENT, element: <RegisterClientForm /> },
+      { path: ROUTES.CLIENT, element: <Client /> },
     ],
   },
   {

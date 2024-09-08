@@ -5,7 +5,6 @@ import {
   TextField,
   Button,
   Box,
-  Typography,
   Container,
   MenuItem,
   Select,
@@ -49,12 +48,8 @@ const RegisterClientForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}
       >
-        <Typography variant="h4" component="h1" align="center">
-          Registrar Cliente
-        </Typography>
-
         <Grid container spacing={2}>
-          {/* Select para tipo de documento */}
+
           <Grid size={6}>
             <FormControl fullWidth>
               <InputLabel id="documentType-label">Document Type</InputLabel>
@@ -74,7 +69,7 @@ const RegisterClientForm = () => {
             </FormControl>
           </Grid>
 
-          {/* Input para el número del documento */}
+
           <Grid  size={6}>
             <TextField
               label="Document Number"
@@ -91,7 +86,7 @@ const RegisterClientForm = () => {
         {/* Campo oculto que contiene el valor completo del documento */}
         <input type="hidden" {...register("document")} />
 
-        {/* Otros campos del formulario */}
+
         <TextField
           label="Name"
           {...register("name")}
