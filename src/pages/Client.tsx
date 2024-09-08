@@ -1,13 +1,13 @@
 import { Container } from "@mui/material";
 import ClientTable from "../component/ClienTable";
-import BasicModal from "../component/Modal";
+import BasicDrawer from "../component/BasicDrawer";
 import RegisterClientForm from "../component/RegisterClientForm";
 
 const Client = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{paddingTop: 7}}>
-        <BasicModal
+        <BasicDrawer
           title="Clients"
           description="Register a new client"
           caption="add"

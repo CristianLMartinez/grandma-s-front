@@ -2,19 +2,12 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
+import Drawer from "@mui/material/Drawer"; // Cambiado de Modal a Drawer
 import Container from "@mui/material/Container";
-import Add from "@mui/icons-material/Add"; // Asegúrate de importar el ícono Add
+import Add from "@mui/icons-material/Add";
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+const drawerStyle = {
+  width: 600,
   p: 4,
 };
 
@@ -25,10 +18,12 @@ type Props = {
   caption: string;
 };
 
-const BasicModal = ({ children, title, description, caption }: Props) => {
+const BasicDrawer = ({ children, title, description, caption }: Props) => {
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+
+  const toggleDrawer = (isOpen: boolean) => () => {
+    setOpen(isOpen);
+  };
 
   return (
     <div>
@@ -45,7 +40,7 @@ const BasicModal = ({ children, title, description, caption }: Props) => {
           {title}
         </Typography>
         <Button
-          onClick={handleOpen}
+          onClick={toggleDrawer(true)}
           variant="contained"
           color="primary"
           endIcon={<Add />}
@@ -54,21 +49,20 @@ const BasicModal = ({ children, title, description, caption }: Props) => {
         </Button>
       </Container>
 
-      <Modal
+      <Drawer
+        anchor="right" 
         open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        onClose={toggleDrawer(false)}
       >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+        <Box sx={drawerStyle}>
+          <Typography id="drawer-title" variant="h6" component="h2">
             {description}
           </Typography>
           {children}
         </Box>
-      </Modal>
+      </Drawer>
     </div>
   );
 };
 
-export default BasicModal;
+export default BasicDrawer;
