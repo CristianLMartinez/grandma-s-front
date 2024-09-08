@@ -5,7 +5,7 @@ import { CssBaseline } from '@mui/material';
 import theme from './theme';
 import Landing from './pages/Landing';
 import { RouterProvider } from 'react-router-dom';
-import { router } from './component/Routes';
+import { router } from './routes/Routes';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -8,7 +8,7 @@ const HeroTest = () => {
       <Box
         component="section"
         sx={{
-          height: "100vh",
+          height: "95vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -16,7 +16,6 @@ const HeroTest = () => {
           backgroundColor: "background.default", // Color de fondo según el tema
         }}
       >
-        <Navbar />
         <Container
           maxWidth="xl"
           sx={{
