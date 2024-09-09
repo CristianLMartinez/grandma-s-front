@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Page404 from "../component/Page404";
 import Landing from "../pages/Landing";
 import { ROUTES } from "./schema";
-import RegisterClientForm from "../component/RegisterClientForm";
+
 import Layout from "../component/Layout";
 import Client from "../pages/Client";
 

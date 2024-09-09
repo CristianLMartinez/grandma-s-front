@@ -1,7 +1,8 @@
 import { Container } from "@mui/material";
-import ClientTable from "../component/ClienTable";
+
 import BasicDrawer from "../component/BasicDrawer";
-import RegisterClientForm from "../component/RegisterClientForm";
+import RegisterClientForm from "../client/RegisterClientForm";
+import ClientTable from "../client/ClienTable";
 
 const Client = () => {
   return (

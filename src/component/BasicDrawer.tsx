@@ -15,7 +15,7 @@ type Props = {
   children: React.ReactNode;
   title: string;
   description: string;
-  caption: string;
+  caption: React.ReactNode;
 };
 
 const BasicDrawer = ({ children, title, description, caption }: Props) => {

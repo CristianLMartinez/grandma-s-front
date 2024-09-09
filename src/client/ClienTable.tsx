@@ -7,14 +7,23 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Container, IconButton, CircularProgress, Alert, TableFooter, TablePagination, Box } from "@mui/material";
+import {
+  Container,
+  IconButton,
+  CircularProgress,
+  Alert,
+  TableFooter,
+  TablePagination,
+  Box,
+  Drawer,
+  Typography,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import { getClients } from "../service/clientService";  // Asegúrate de que esta importación sea válida
+
+import { getClients, deleteClient } from "./clientService";
+import RegisterClientForm from "./RegisterClientForm";
+import TablePaginationActions from "./TablePaginationActions";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,61 +44,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-// Componente para la paginación personalizada
-interface TablePaginationActionsProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    newPage: number
-  ) => void;
-}
-
-function TablePaginationActions(props: TablePaginationActionsProps) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} aria-label="first page">
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton onClick={handleNextButtonClick} disabled={page >= Math.ceil(count / rowsPerPage) - 1} aria-label="next page">
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton onClick={handleLastPageButtonClick} disabled={page >= Math.ceil(count / rowsPerPage) - 1} aria-label="last page">
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
-
 const ClientTable = () => {
   const [clients, setClients] = useState([]); // Estado para los clientes
   const [loading, setLoading] = useState(true); // Estado para el spinner de carga
   const [error, setError] = useState<string | null>(null); // Estado para manejar errores
   const [page, setPage] = useState(0); // Estado para la paginación
   const [rowsPerPage, setRowsPerPage] = useState(5); // Estado para las filas por página
+  const [selectedClient, setSelectedClient] = useState<any>(null); // Estado para el cliente seleccionado para edición
+  const [drawerOpen, setDrawerOpen] = useState(false); // Estado para manejar la visibilidad del Drawer
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -113,12 +75,34 @@ const ClientTable = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
+  const handleEditClient = (client: any) => {
+    setSelectedClient(client);
+    setDrawerOpen(true); // Abrir el Drawer para editar el cliente
+  };
+
+  const handleDeleteClient = async (document: string) => {
+    try {
+      await deleteClient(document);
+      setClients(clients.filter((client: any) => client.document !== document));
+    } catch (error) {
+      setError("Failed to delete client. Please try again later.");
+    }
+  };
+
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
+    setSelectedClient(null); // Cerrar el Drawer y limpiar el cliente seleccionado
+  };
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
 
   if (loading) {
     return (
@@ -179,10 +163,16 @@ const ClientTable = () => {
                     {client.phone || "N/A"}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <IconButton aria-label="edit">
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => handleEditClient(client)}
+                    >
                       <EditIcon color="warning" />
                     </IconButton>
-                    <IconButton aria-label="delete">
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => handleDeleteClient(client.document)}
+                    >
                       <DeleteIcon color="error" />
                     </IconButton>
                   </StyledTableCell>
@@ -210,6 +200,23 @@ const ClientTable = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+      <Drawer anchor="right" open={drawerOpen} onClose={handleCloseDrawer}>
+        <Box sx={{ width: 400, padding: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            {selectedClient ? "Edit Client" : "Add New Client"}
+          </Typography>
+          {selectedClient && (
+            <RegisterClientForm
+              clientToEdit={selectedClient}
+              onEditSuccess={() => {
+                handleCloseDrawer(); // Cerrar el Drawer después de editar
+                // Opcional: Actualizar la lista de clientes
+                getClients();
+              }}
+            />
+          )}
+        </Box>
+      </Drawer>
     </Container>
   );
 };

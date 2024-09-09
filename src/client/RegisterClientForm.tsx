@@ -14,10 +14,16 @@ import {
   Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { schema, Client, DocumentType } from "../schemas/Client";
-import { registerClient } from "../service/clientService";
+import { schema, Client, DocumentType } from "./Client";
+import { registerClient, updateClient } from "./clientService";
 
-const RegisterClientForm = () => {
+const RegisterClientForm = ({
+  clientToEdit,
+  onEditSuccess,
+}: {
+  clientToEdit?: Client;
+  onEditSuccess?: () => void;
+}) => {
   const {
     register,
     handleSubmit,
@@ -25,6 +31,7 @@ const RegisterClientForm = () => {
     formState: { errors },
   } = useForm<Client>({
     resolver: zodResolver(schema),
+    defaultValues: clientToEdit,
   });
 
   const [documentType, setDocumentType] = useState<DocumentType>(
@@ -32,7 +39,7 @@ const RegisterClientForm = () => {
   );
   const [documentNumber, setDocumentNumber] = useState("");
   const [phone, setPhone] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
     "success"
@@ -47,20 +54,25 @@ const RegisterClientForm = () => {
     if (value.length > 3) {
       value = `${value.slice(0, 3)}-${value.slice(3)}`;
     }
-    register("phone").onChange({target: { value }});
+    register("phone").onChange({ target: { value } });
     setPhone(value);
   };
 
   const onSubmit = async (data: Client) => {
     try {
-      const responseBody = await registerClient(data);
-      console.info(responseBody);
-      setSnackbarMessage(
-        `Client registered with document: ${responseBody.document}`
-      );
+      if (clientToEdit) {
+        await updateClient(data.document); // Utiliza el endpoint de actualización
+        setSnackbarMessage(`Client updated with document: ${data.document}`);
+      } else {
+        await registerClient(data);
+        setSnackbarMessage(`Client registered with document: ${data.document}`);
+      }
       setSnackbarSeverity("success");
+      onEditSuccess?.();
     } catch (error: any) {
-      setSnackbarMessage(error.response.data.description);
+      setSnackbarMessage(
+        error.response?.data?.description || "An error occurred."
+      );
       setSnackbarSeverity("error");
     } finally {
       setSnackbarOpen(true);
@@ -105,6 +117,7 @@ const RegisterClientForm = () => {
           <Grid size={{ xs: 9 }}>
             <TextField
               label="Document Number"
+              type="number"
               value={documentNumber}
               onChange={(e) => setDocumentNumber(e.target.value)}
               error={!!errors.document}
@@ -138,7 +151,7 @@ const RegisterClientForm = () => {
         <TextField
           label="Phone"
           type="tel"
-          value={phone} 
+          value={phone}
           {...register("phone")}
           onChange={handlePhoneChange}
           error={!!errors.phone}
@@ -159,12 +172,13 @@ const RegisterClientForm = () => {
         />
 
         <Button type="submit" variant="contained" color="primary" size="large">
-          Registrar Cliente
+          {clientToEdit ? "Update Client" : "Create Cliente"}
         </Button>
         <Snackbar
-          sx={{ width: "100%", position: "absolute", top: 400, left: 0 }}
+          sx={{ width: "100%", marginBottom: 20 }}
           open={snackbarOpen}
-          autoHideDuration={6000}
+          autoHideDuration={1000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           onClose={handleCloseSnackbar}
         >
           <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
