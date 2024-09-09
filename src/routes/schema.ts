@@ -1,6 +1,6 @@
 export const ROUTES = {
     INDEX: '/',
     CLIENT: 'clients',
-    ORDER: '/orders',
-    COMBO: '/combos',
+    ORDER: 'orders',
+    COMBO: 'combos',
 }

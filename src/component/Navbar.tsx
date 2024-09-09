@@ -22,9 +22,9 @@ interface Props {
 
 const drawerWidth = 240;
 const navItems = [
-  { name: "Client", route: ROUTES.CLIENT },
-  { name: "Order", route: ROUTES.ORDER },
-  { name: "Product", route: ROUTES.COMBO },
+  { name: "client", route: ROUTES.CLIENT },
+  { name: "order", route: ROUTES.ORDER },
+  { name: "combo", route: ROUTES.COMBO },
 ];
 
 const Navbar = (props: Props) => {
