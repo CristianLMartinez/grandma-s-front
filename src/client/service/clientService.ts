@@ -1,5 +1,5 @@
-import { ENDPOINTS, instance } from "../service/axiosConfig"; // Asegúrate de que la ruta sea correcta
-import { Client } from "./Client"; // Asegúrate de que la ruta sea correcta
+import { ENDPOINTS, instance } from "../../service/axiosConfig"; // Asegúrate de que la ruta sea correcta
+import { Client } from "../schema/Client"; // Asegúrate de que la ruta sea correcta
 
 const BASE_ENDPOINT = ENDPOINTS.CLIENTS;
 
@@ -27,9 +27,9 @@ export const getClients = async () => {
   }
 };
 
-export const updateClient = async (document: string) => {
+export const updateClient = async (document: string, client: Client) => {
   try {
-    const response = await instance.put(`${BASE_ENDPOINT}/${document}`);
+    const response = await instance.put(`${BASE_ENDPOINT}/${document}`, client);
     return response.data;
   } catch (error) {
     console.error("Error fetching clients: ", error);

@@ -14,14 +14,14 @@ import {
   Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { schema, Client, DocumentType } from "./Client";
-import { registerClient, updateClient } from "./clientService";
+import { schema, Client, DocumentType } from "../schema/Client";
+import { registerClient, updateClient } from "../service/clientService";
 
 const RegisterClientForm = ({
-  clientToEdit,
+  client,
   onEditSuccess,
 }: {
-  clientToEdit?: Client;
+  client?: Client;
   onEditSuccess?: () => void;
 }) => {
   const {
@@ -31,7 +31,7 @@ const RegisterClientForm = ({
     formState: { errors },
   } = useForm<Client>({
     resolver: zodResolver(schema),
-    defaultValues: clientToEdit,
+    defaultValues: client,
   });
 
   const [documentType, setDocumentType] = useState<DocumentType>(
@@ -46,6 +46,12 @@ const RegisterClientForm = ({
   );
 
   useEffect(() => {
+    if(client) {
+      const [type, number] = client.document.split("-");
+      setDocumentType(type as DocumentType);
+      setDocumentNumber(number);
+      setPhone(client.phone);
+    }
     setValue("document", `${documentType}-${documentNumber}`);
   }, [documentType, documentNumber, setValue]);
 
@@ -60,8 +66,8 @@ const RegisterClientForm = ({
 
   const onSubmit = async (data: Client) => {
     try {
-      if (clientToEdit) {
-        await updateClient(data.document); // Utiliza el endpoint de actualización
+      if (client) {
+        await updateClient(data.document, data); // Utiliza el endpoint de actualización
         setSnackbarMessage(`Client updated with document: ${data.document}`);
       } else {
         await registerClient(data);
@@ -118,6 +124,7 @@ const RegisterClientForm = ({
             <TextField
               label="Document Number"
               type="number"
+              disabled={client !== undefined}
               value={documentNumber}
               onChange={(e) => setDocumentNumber(e.target.value)}
               error={!!errors.document}
@@ -172,7 +179,7 @@ const RegisterClientForm = ({
         />
 
         <Button type="submit" variant="contained" color="primary" size="large">
-          {clientToEdit ? "Update Client" : "Create Cliente"}
+          {client ? "Update Client" : "Create Cliente"}
         </Button>
         <Snackbar
           sx={{ width: "100%", marginBottom: 20 }}

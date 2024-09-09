@@ -13,13 +13,12 @@ const drawerStyle = {
 
 type Props = {
   children: React.ReactNode;
-  title: string;
   description: string;
-  caption: React.ReactNode;
+  open: boolean;
+  setOpen: (isOpen: boolean) => void;
 };
 
-const BasicDrawer = ({ children, title, description, caption }: Props) => {
-  const [open, setOpen] = React.useState(false);
+const BasicDrawer = ({ children, description, open, setOpen }: Props) => {
 
   const toggleDrawer = (isOpen: boolean) => () => {
     setOpen(isOpen);
@@ -27,28 +26,6 @@ const BasicDrawer = ({ children, title, description, caption }: Props) => {
 
   return (
     <div>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "right",
-          marginBottom: 2,
-        }}
-      >
-        <Typography variant="h6" component="h2">
-          {title}
-        </Typography>
-        <Button
-          onClick={toggleDrawer(true)}
-          variant="contained"
-          color="primary"
-          endIcon={<Add />}
-        >
-          {caption}
-        </Button>
-      </Container>
-
       <Drawer
         anchor="right" 
         open={open}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
@@ -15,15 +15,15 @@ import {
   TableFooter,
   TablePagination,
   Box,
-  Drawer,
-  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { getClients, deleteClient } from "./clientService";
+import { getClients, deleteClient } from "../service/clientService";
 import RegisterClientForm from "./RegisterClientForm";
 import TablePaginationActions from "./TablePaginationActions";
+import BasicDrawer from "../../component/BasicDrawer";
+import { Client } from "../schema/Client";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,13 +45,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const ClientTable = () => {
-  const [clients, setClients] = useState([]); // Estado para los clientes
-  const [loading, setLoading] = useState(true); // Estado para el spinner de carga
-  const [error, setError] = useState<string | null>(null); // Estado para manejar errores
-  const [page, setPage] = useState(0); // Estado para la paginación
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Estado para las filas por página
-  const [selectedClient, setSelectedClient] = useState<any>(null); // Estado para el cliente seleccionado para edición
-  const [drawerOpen, setDrawerOpen] = useState(false); // Estado para manejar la visibilidad del Drawer
+  const [open, setOpen] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [selectedClient, setSelectedClient] = useState<any>(null);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -82,23 +82,20 @@ const ClientTable = () => {
     setPage(0);
   };
 
-  const handleEditClient = (client: any) => {
+  const handleEditClient = (client: Client) => {
+    console.log(client);
     setSelectedClient(client);
-    setDrawerOpen(true); // Abrir el Drawer para editar el cliente
+    setOpen(true);
   };
 
   const handleDeleteClient = async (document: string) => {
     try {
+      console.info("Deleting client with document: ", document);
       await deleteClient(document);
       setClients(clients.filter((client: any) => client.document !== document));
     } catch (error) {
       setError("Failed to delete client. Please try again later.");
     }
-  };
-
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-    setSelectedClient(null); // Cerrar el Drawer y limpiar el cliente seleccionado
   };
 
   const emptyRows =
@@ -150,18 +147,23 @@ const ClientTable = () => {
                   <StyledTableCell component="th" scope="row">
                     {client.name || "N/A"}
                   </StyledTableCell>
+
                   <StyledTableCell align="right">
                     {client.document || "N/A"}
                   </StyledTableCell>
+
                   <StyledTableCell align="right">
                     {client.email || "N/A"}
                   </StyledTableCell>
+
                   <StyledTableCell align="right">
                     {client.deliveryAddress || "N/A"}
                   </StyledTableCell>
+
                   <StyledTableCell align="right">
                     {client.phone || "N/A"}
                   </StyledTableCell>
+
                   <StyledTableCell align="right">
                     <IconButton
                       aria-label="edit"
@@ -169,6 +171,7 @@ const ClientTable = () => {
                     >
                       <EditIcon color="warning" />
                     </IconButton>
+
                     <IconButton
                       aria-label="delete"
                       onClick={() => handleDeleteClient(client.document)}
@@ -184,6 +187,7 @@ const ClientTable = () => {
               </TableRow>
             )}
           </TableBody>
+          
           <TableFooter>
             <TableRow>
               <TablePagination
@@ -200,23 +204,13 @@ const ClientTable = () => {
           </TableFooter>
         </Table>
       </TableContainer>
-      <Drawer anchor="right" open={drawerOpen} onClose={handleCloseDrawer}>
-        <Box sx={{ width: 400, padding: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            {selectedClient ? "Edit Client" : "Add New Client"}
-          </Typography>
-          {selectedClient && (
-            <RegisterClientForm
-              clientToEdit={selectedClient}
-              onEditSuccess={() => {
-                handleCloseDrawer(); // Cerrar el Drawer después de editar
-                // Opcional: Actualizar la lista de clientes
-                getClients();
-              }}
-            />
-          )}
-        </Box>
-      </Drawer>
+
+      <BasicDrawer
+        open={open}
+        setOpen={setOpen}
+        description="Update client"
+        children={<RegisterClientForm client={selectedClient} />}
+      />
     </Container>
   );
 };
