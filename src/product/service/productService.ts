@@ -27,6 +27,26 @@ export const getProducts = async () => {
   }
 };
 
+export const searchProductBy = async (query: string) => {
+  try {
+    const response = await instance.get(BASE_ENDPOINT + "/search", {
+      headers: {
+        Accept: "application/json",
+      },
+      params: {
+        q: query,
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products: ", error);
+    throw error;
+  }
+};
+
+
+
 export const updateProduct = async (document: string, product: Product) => {
   try {
     const response = await instance.put(`${BASE_ENDPOINT}/${document}`, product);

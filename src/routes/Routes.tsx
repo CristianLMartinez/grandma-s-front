@@ -6,6 +6,7 @@ import { ROUTES } from "./schema";
 import Layout from "../component/Layout";
 import Client from "../pages/Client";
 import Combo from "../pages/Combo";
+import Order from "../pages/Order";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.INDEX, element: <Landing /> },
       { path: ROUTES.CLIENT, element: <Client /> },
       { path: ROUTES.COMBO, element: <Combo /> },
+      { path: ROUTES.ORDER, element: <Order /> },
 
     ],
   },

@@ -47,7 +47,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const ClientTable = () => {
   const [open, setOpen] = useState(false);
   const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -61,7 +61,7 @@ const ClientTable = () => {
       } catch (error) {
         setError("Failed to fetch clients. Please try again later.");
       } finally {
-        setLoading(false);
+        setLoading("");
       }
     };
 
